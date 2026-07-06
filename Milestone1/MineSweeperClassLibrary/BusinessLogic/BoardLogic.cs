@@ -153,6 +153,36 @@ namespace Milestone1.MineSweeperClassLibrary.BusinessLogic
             board.GameState = GameState.StillPlaying;
             return GameState.StillPlaying;
         }
+        public void FloodFill(BoardModel board, int row, int col)
+        {
+            if (row < 0 || row >= board.Size || col < 0 || col >= board.Size)
+            {
+                return;
+            }
+
+            CellModel cell = board.Cells[row, col];
+
+            if (cell.IsVisited || cell.IsFlagged || cell.IsBomb)
+            {
+                return;
+            }
+
+            cell.IsVisited = true;
+
+            if (cell.NumberOfBombNeighbors > 0)
+            {
+                return;
+            }
+
+            FloodFill(board, row - 1, col);
+            FloodFill(board, row + 1, col);
+            FloodFill(board, row, col - 1);
+            FloodFill(board, row, col + 1);
+            FloodFill(board, row - 1, col - 1);
+            FloodFill(board, row - 1, col + 1);
+            FloodFill(board, row + 1, col - 1);
+            FloodFill(board, row + 1, col + 1);
+        }
     }
 
 

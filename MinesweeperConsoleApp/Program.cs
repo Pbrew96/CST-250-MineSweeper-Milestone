@@ -14,7 +14,7 @@ public class Program
         BoardLogic boardLogic = new BoardLogic();
 
         // Create a 4x4 game board and set the difficulty.
-        BoardModel board = new BoardModel(4);
+        BoardModel board = new BoardModel(12);
         board.Difficulty = 1;
 
         // Place bombs on the board and calculate neighboring bomb counts.
@@ -79,7 +79,16 @@ public class Program
             // Visit the selected cell.
             if (move == 1)
             {
-                board.Cells[row, col].IsVisited = true;
+                // If the cell has no bomb neighbors, use recursive flood fill.
+                if (!board.Cells[row, col].IsBomb &&
+                    board.Cells[row, col].NumberOfBombNeighbors == 0)
+                {
+                    boardLogic.FloodFill(board, row, col);
+                }
+                else
+                {
+                    board.Cells[row, col].IsVisited = true;
+                }
 
                 // Award a reward if one is found.
                 if (board.Cells[row, col].HasSpecialReward)
@@ -88,6 +97,7 @@ public class Program
                     Console.WriteLine("You found a reward!");
                 }
             }
+        
             // Place a flag on the selected cell.
             else if (move == 2)
             {
