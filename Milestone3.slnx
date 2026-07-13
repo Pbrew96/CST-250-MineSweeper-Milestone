@@ -2,4 +2,5 @@
   <Project Path="Milestone1/MineSweeperClassLibrary.csproj" />
   <Project Path="MinesweeperClassLibrary/MinesweeperClassLibrary.Tests.csproj" Id="6fd0a5ea-ec7e-4542-927b-309f5996894b" />
   <Project Path="MinesweeperConsoleApp/MinesweeperConsoleApp.csproj" Id="a19a550d-2d00-4d41-9a2b-ad2d61aa2e1b" />
+  <Project Path="MinesweeperGUI/MinesweeperGUI.csproj" Id="31c121c5-ab69-409c-a970-ff47f65104f4" />
 </Solution>

@@ -137,5 +137,131 @@ namespace MinesweeperClassLibrary.Tests
 
             Assert.True(true);
         }
+        [Fact]
+        public void SetupBombs_EasyDifficulty_ShouldPlaceBoardSizeBombs()
+        {
+            BoardModel board = new BoardModel(8);
+            board.Difficulty = 1;
+
+            BoardLogic boardLogic = new BoardLogic();
+            boardLogic.SetupBombs(board);
+
+            int bombCount = 0;
+
+            for (int row = 0; row < board.Size; row++)
+            {
+                for (int col = 0; col < board.Size; col++)
+                {
+                    if (board.Cells[row, col].IsBomb)
+                    {
+                        bombCount++;
+                    }
+                }
+            }
+
+            Assert.Equal(8, bombCount);
+        }
+        [Fact]
+        public void SetupBombs_MediumDifficulty_ShouldPlaceDoubleBoardSizeBombs()
+        {
+            BoardModel board = new BoardModel(8);
+            board.Difficulty = 2;
+
+            BoardLogic boardLogic = new BoardLogic();
+            boardLogic.SetupBombs(board);
+
+            int bombCount = 0;
+
+            for (int row = 0; row < board.Size; row++)
+            {
+                for (int col = 0; col < board.Size; col++)
+                {
+                    if (board.Cells[row, col].IsBomb)
+                    {
+                        bombCount++;
+                    }
+                }
+            }
+
+            Assert.Equal(16, bombCount);
+        }
+        [Fact]
+        public void SetupBombs_DifficultDifficulty_ShouldPlaceTripleBoardSizeBombs()
+        {
+            BoardModel board = new BoardModel(8);
+            board.Difficulty = 3;
+
+            BoardLogic boardLogic = new BoardLogic();
+            boardLogic.SetupBombs(board);
+
+            int bombCount = 0;
+
+            for (int row = 0; row < board.Size; row++)
+            {
+                for (int col = 0; col < board.Size; col++)
+                {
+                    if (board.Cells[row, col].IsBomb)
+                    {
+                        bombCount++;
+                    }
+                }
+            }
+
+            Assert.Equal(24, bombCount);
+        }
+        [Fact]
+        public void CountBombsNearby_ShouldCountDiagonalBomb()
+        {
+            BoardModel board = new BoardModel(3);
+            BoardLogic boardLogic = new BoardLogic();
+
+            board.Cells[0, 0].IsBomb = true;
+
+            boardLogic.CountBombsNearby(board);
+
+            Assert.Equal(1, board.Cells[1, 1].NumberOfBombNeighbors);
+        }
+        [Fact]
+        public void FloodFill_ShouldVisitConnectedEmptyCells()
+        {
+            BoardModel board = new BoardModel(3);
+            BoardLogic boardLogic = new BoardLogic();
+
+            boardLogic.CountBombsNearby(board);
+            boardLogic.FloodFill(board, 1, 1);
+
+            Assert.True(board.Cells[1, 1].IsVisited);
+            Assert.True(board.Cells[0, 0].IsVisited);
+            Assert.True(board.Cells[2, 2].IsVisited);
+        }
+        [Fact]
+        public void DetermineGameState_VisitedBomb_ShouldReturnGameLost()
+        {
+            BoardModel board = new BoardModel(3);
+            BoardLogic boardLogic = new BoardLogic();
+
+            board.Cells[1, 1].IsBomb = true;
+            board.Cells[1, 1].IsVisited = true;
+
+            GameState result = boardLogic.DetermineGameState(board);
+
+            Assert.Equal(GameState.GameLost, result);
+        }
+        [Fact]
+        public void DetermineGameState_AllSafeCellsVisited_ShouldReturnGameWon()
+        {
+            BoardModel board = new BoardModel(2);
+            BoardLogic boardLogic = new BoardLogic();
+
+            board.Cells[0, 0].IsBomb = true;
+
+            board.Cells[0, 1].IsVisited = true;
+            board.Cells[1, 0].IsVisited = true;
+            board.Cells[1, 1].IsVisited = true;
+
+            GameState result = boardLogic.DetermineGameState(board);
+
+            Assert.Equal(GameState.GameWon, result);
+        }
     }
 }
