@@ -1,3 +1,9 @@
+/* Patrick Brewster
+ * CST-250
+ * Milestone 5
+ * Minesweeper Game
+ * 7/19/2026
+ */
 namespace MinesweeperGUI
 {
     internal static class Program

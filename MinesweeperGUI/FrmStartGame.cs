@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* Patrick Brewster
+ * CST-250
+ * Milestone 5
+ * Minesweeper Game
+ * 7/19/2026
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;

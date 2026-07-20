@@ -78,13 +78,14 @@
             // 
             // trbDifficulty
             // 
+            trbDifficulty.LargeChange = 1;
             trbDifficulty.Location = new Point(12, 155);
             trbDifficulty.Maximum = 3;
             trbDifficulty.Minimum = 1;
             trbDifficulty.Name = "trbDifficulty";
             trbDifficulty.Size = new Size(104, 45);
             trbDifficulty.TabIndex = 4;
-            trbDifficulty.Value = 3;
+            trbDifficulty.Value = 1;
             trbDifficulty.Scroll += trbDifficulty_Scroll;
             // 
             // btnPlay

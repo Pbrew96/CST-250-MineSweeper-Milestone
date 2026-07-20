@@ -1,4 +1,10 @@
-﻿using Milestone1.MineSweeperClassLibrary.Models;
+﻿/* Patrick Brewster
+ * CST-250
+ * Milestone 5
+ * Minesweeper Game
+ * 7/19/2026
+ */
+using Milestone1.MineSweeperClassLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;

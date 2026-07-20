@@ -1,7 +1,16 @@
+/* Patrick Brewster
+ * CST-250
+ * Milestone 5
+ * Minesweeper Game
+ * 7/19/2026
+ */
+
 using Milestone1.MineSweeperClassLibrary.BusinessLogic;
 using Milestone1.MineSweeperClassLibrary.Models;
+using MineSweeperClassLibrary.Models;
 using System.IO;
 namespace MinesweeperGUI
+
 
 {
     public partial class FrmGame : Form
@@ -187,7 +196,7 @@ namespace MinesweeperGUI
                 int visitedAfterMove = CountVisitedCells();
 
                 // Add points for every newly revealed cell
-                _score += visitedAfterMove - visitedBeforeMove;
+                _score += (visitedAfterMove - visitedBeforeMove);
                 lblScore.Text = _score.ToString();
 
                 UpdateButtonFaces();
@@ -203,7 +212,9 @@ namespace MinesweeperGUI
                 }
                 else if (state == GameState.GameWon)
                 {
-                    MessageBox.Show($"Congratulations! You won! Your score is {_score}.");
+                    int finalscore = _score * _difficulty;
+                    MessageBox.Show($"Congratulations! You won! Your score is {finalscore}.");
+                    ShowWinnerAndHighScores();
                 }
             }
         }
@@ -241,7 +252,7 @@ namespace MinesweeperGUI
                         button.BackColor = Color.Gold;
                         button.FlatStyle = FlatStyle.Flat;
 
-                        if (!_rewardFound)
+                        if (!_rewardFound && _boardLogic.DetermineGameState(_board) == GameState.StillPlaying)
                         {
                             _rewardFound = true;
                             _score += 10;
@@ -445,6 +456,25 @@ namespace MinesweeperGUI
                 }
             }
 
+        }
+        private void ShowWinnerAndHighScores()
+        {
+            using (FrmWinnerName winnerNameForm = new FrmWinnerName())
+            {
+                if (winnerNameForm.ShowDialog() == DialogResult.OK)
+                {
+                    GameStat gameStat = new GameStat(
+                        0,
+                        winnerNameForm.PlayerName,
+                        _score * _difficulty,
+                        DateTime.Now);
+
+                    using (HighScores highScoresForm = new HighScores(gameStat))
+                    {
+                        highScoresForm.ShowDialog();
+                    }
+                }
+            }
         }
     }
 }
