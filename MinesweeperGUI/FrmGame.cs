@@ -212,9 +212,9 @@ namespace MinesweeperGUI
                 }
                 else if (state == GameState.GameWon)
                 {
-                    int finalscore = _score * _difficulty;
-                    MessageBox.Show($"Congratulations! You won! Your score is {finalscore}.");
-                    ShowWinnerAndHighScores();
+                    int finalScore = _boardLogic.CalculateFinalScore(_score, _difficulty);
+                    MessageBox.Show($"Congratulations! You won! Your score is {finalScore}.");
+                    ShowWinnerAndHighScores(finalScore);
                 }
             }
         }
@@ -457,7 +457,7 @@ namespace MinesweeperGUI
             }
 
         }
-        private void ShowWinnerAndHighScores()
+        private void ShowWinnerAndHighScores(int finalScore)
         {
             using (FrmWinnerName winnerNameForm = new FrmWinnerName())
             {
@@ -466,7 +466,7 @@ namespace MinesweeperGUI
                     GameStat gameStat = new GameStat(
                         0,
                         winnerNameForm.PlayerName,
-                        _score * _difficulty,
+                        finalScore,
                         DateTime.Now);
 
                     using (HighScores highScoresForm = new HighScores(gameStat))

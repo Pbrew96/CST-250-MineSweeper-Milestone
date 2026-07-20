@@ -1,5 +1,6 @@
 ﻿using Milestone1.MineSweeperClassLibrary.BusinessLogic;
 using Milestone1.MineSweeperClassLibrary.Models;
+using MineSweeperClassLibrary.DataAccess;
 
 namespace MinesweeperClassLibrary.Tests
 {
@@ -263,5 +264,6 @@ namespace MinesweeperClassLibrary.Tests
 
             Assert.Equal(GameState.GameWon, result);
         }
+      
     }
 }

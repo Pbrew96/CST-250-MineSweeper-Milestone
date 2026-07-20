@@ -189,6 +189,10 @@ namespace Milestone1.MineSweeperClassLibrary.BusinessLogic
             FloodFill(board, row + 1, col - 1);
             FloodFill(board, row + 1, col + 1);
         }
+        public int CalculateFinalScore(int score, int difficulty)
+        {
+            return score * difficulty;
+        }
     }
 
 
