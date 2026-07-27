@@ -8,6 +8,7 @@
 using Milestone1.MineSweeperClassLibrary.BusinessLogic;
 using Milestone1.MineSweeperClassLibrary.Models;
 using MineSweeperClassLibrary.Models;
+using MineSweeperClassLibrary.Services.DataAccessLayer;
 using System.IO;
 namespace MinesweeperGUI
 
@@ -23,6 +24,7 @@ namespace MinesweeperGUI
         private DateTime _startTime;
         private int _score;
         private bool _rewardFound = false;
+        private GameSaveDAO _gameSaveDAO;
 
         private Image img1 = Image.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Minesweeper1.png"));
 
@@ -65,6 +67,9 @@ namespace MinesweeperGUI
 
             // Create the board logic object
             _boardLogic = new BoardLogic();
+
+            // Create the save/load object
+            _gameSaveDAO = new GameSaveDAO();
 
             // Create the game board
             _board = new BoardModel(_boardSize);
@@ -181,7 +186,7 @@ namespace MinesweeperGUI
                 // Count visited cells before the move
                 int visitedBeforeMove = CountVisitedCells();
 
-                // Use flood fill for empty cells
+                // Use flood fill for an empty safe cell
                 if (!selectedCell.IsBomb &&
                     selectedCell.NumberOfBombNeighbors == 0)
                 {
@@ -189,31 +194,68 @@ namespace MinesweeperGUI
                 }
                 else
                 {
+                    // Reveal the selected cell
                     selectedCell.IsVisited = true;
+                }
+
+                // Check whether the reward was revealed by this move
+                if (!_rewardFound)
+                {
+                    for (int rewardRow = 0;
+                         rewardRow < _board.Size;
+                         rewardRow++)
+                    {
+                        for (int rewardCol = 0;
+                             rewardCol < _board.Size;
+                             rewardCol++)
+                        {
+                            CellModel cell =
+                                _board.Cells[rewardRow, rewardCol];
+
+                            if (cell.HasSpecialReward &&
+                                cell.IsVisited)
+                            {
+                                ActivateSpecialReward(
+                                    rewardRow,
+                                    rewardCol);
+                            }
+                        }
+                    }
                 }
 
                 // Count visited cells after the move
                 int visitedAfterMove = CountVisitedCells();
 
-                // Add points for every newly revealed cell
-                _score += (visitedAfterMove - visitedBeforeMove);
+                // Add points for newly revealed cells
+                _score +=
+                    visitedAfterMove - visitedBeforeMove;
+
                 lblScore.Text = _score.ToString();
 
+                // Update the appearance of the board
                 UpdateButtonFaces();
 
-                GameState state = _boardLogic.DetermineGameState(_board);
+                GameState state =
+                    _boardLogic.DetermineGameState(_board);
 
                 if (state == GameState.GameLost)
                 {
-                    MessageBox.Show("You hit a bomb. Game over.");
+                    MessageBox.Show(
+                        "You hit a bomb. Game over.");
 
                     RevealBoard();
                     UpdateButtonFaces();
                 }
                 else if (state == GameState.GameWon)
                 {
-                    int finalScore = _boardLogic.CalculateFinalScore(_score, _difficulty);
-                    MessageBox.Show($"Congratulations! You won! Your score is {finalScore}.");
+                    int finalScore =
+                        _boardLogic.CalculateFinalScore(
+                            _score,
+                            _difficulty);
+
+                    MessageBox.Show(
+                        $"Congratulations! You won! Your score is {finalScore}.");
+
                     ShowWinnerAndHighScores(finalScore);
                 }
             }
@@ -251,16 +293,8 @@ namespace MinesweeperGUI
                         button.BackgroundImage = imgReward;
                         button.BackColor = Color.Gold;
                         button.FlatStyle = FlatStyle.Flat;
-
-                        if (!_rewardFound && _boardLogic.DetermineGameState(_board) == GameState.StillPlaying)
-                        {
-                            _rewardFound = true;
-                            _score += 10;
-                            lblScore.Text = _score.ToString();
-
-                            MessageBox.Show("You found a reward!");
-                        }
                     }
+                                  
                     else if (cell.IsBomb)
                     {
                         button.BackgroundImage = imgBomb;
@@ -475,6 +509,144 @@ namespace MinesweeperGUI
                     }
                 }
             }
+        }
+        private void TsmSaveGameClickEH(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog =
+                new SaveFileDialog();
+
+            saveFileDialog.Filter =
+                "JSON File (*.json)|*.json";
+
+            saveFileDialog.DefaultExt = "json";
+
+            if (saveFileDialog.ShowDialog() ==
+                DialogResult.OK)
+            {
+                // Create a normal list because a two-dimensional
+                // array does not serialize reliably
+                List<CellModel> savedCells =
+                    new List<CellModel>();
+
+                for (int row = 0; row < _board.Size; row++)
+                {
+                    for (int col = 0; col < _board.Size; col++)
+                    {
+                        savedCells.Add(_board.Cells[row, col]);
+                    }
+                }
+
+                SavedGameModel savedGame =
+                    new SavedGameModel(
+                        _board.Size,
+                        _board.Difficulty,
+                        savedCells,
+                        _score,
+                        _startTime,
+                        _rewardFound);
+
+                string message =
+                    _gameSaveDAO.SaveGame(
+                        saveFileDialog.FileName,
+                        savedGame);
+
+                MessageBox.Show(message);
+            }
+        }
+        private void TsmResumeGameClickEH(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog =
+                new OpenFileDialog();
+
+            openFileDialog.Filter =
+                "JSON File (*.json)|*.json";
+
+            if (openFileDialog.ShowDialog() ==
+                DialogResult.OK)
+            {
+                try
+                {
+                    SavedGameModel savedGame =
+                        _gameSaveDAO.LoadGame(
+                            openFileDialog.FileName);
+
+                    if (savedGame == null ||
+                        savedGame.Cells == null)
+                    {
+                        MessageBox.Show(
+                            "The saved game could not be loaded.");
+
+                        return;
+                    }
+
+                    // Restore the saved settings
+                    _boardSize = savedGame.BoardSize;
+                    _difficulty = savedGame.Difficulty;
+
+                    // Create a new board with a valid Cells array
+                    _board = new BoardModel(_boardSize);
+                    _board.Difficulty = _difficulty;
+
+                    // Restore every saved cell
+                    foreach (CellModel savedCell in savedGame.Cells)
+                    {
+                        _board.Cells[
+                            savedCell.Row,
+                            savedCell.Column] = savedCell;
+                    }
+
+                    // Restore the remaining game information
+                    _score = savedGame.Score;
+                    _startTime = savedGame.StartTime;
+                    _rewardFound = savedGame.RewardFound;
+
+                    lblScore.Text = _score.ToString();
+                    lblStartTime.Text =
+                        _startTime.ToString("hh:mm:ss tt");
+
+                    // Rebuild the button grid
+                    _buttons =
+                        new Button[_boardSize, _boardSize];
+
+                    CreateButtonGrid();
+
+                    MessageBox.Show(
+                        "The saved game was loaded successfully.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+        /// <summary>
+        /// Activates the reward and updates the game screen
+        /// </summary>
+        /// <param name="rewardRow"></param>
+        /// <param name="rewardCol"></param>
+        private void ActivateSpecialReward(
+            int rewardRow,
+            int rewardCol)
+        {
+            // Reveal the safe cells using the business logic layer
+            _boardLogic.ActivateSpecialReward(
+                _board,
+                rewardRow,
+                rewardCol);
+
+            // Add the reward bonus
+            _score += 10;
+
+            // Mark the reward as used
+            _rewardFound = true;
+
+            // Update the score label
+            lblScore.Text = _score.ToString();
+
+            // Show the reward message
+            MessageBox.Show(
+                "You found the special reward! " +
+                "Nearby safe cells were revealed and you earned 10 bonus points.");
         }
     }
 }

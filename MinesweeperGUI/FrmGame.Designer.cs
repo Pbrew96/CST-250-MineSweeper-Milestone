@@ -35,15 +35,20 @@
             lblScore = new Label();
             btnRestart = new Button();
             btnShowBombs = new Button();
+            menuStrip1 = new MenuStrip();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            saveToolStripMenuItem = new ToolStripMenuItem();
+            loadToolStripMenuItem = new ToolStripMenuItem();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // pnlGameBoard
             // 
             pnlGameBoard.AutoScroll = true;
             pnlGameBoard.BorderStyle = BorderStyle.FixedSingle;
-            pnlGameBoard.Location = new Point(12, 12);
+            pnlGameBoard.Location = new Point(12, 37);
             pnlGameBoard.Name = "pnlGameBoard";
-            pnlGameBoard.Size = new Size(545, 709);
+            pnlGameBoard.Size = new Size(545, 684);
             pnlGameBoard.TabIndex = 0;
             // 
             // label1
@@ -102,6 +107,36 @@
             btnShowBombs.UseVisualStyleBackColor = true;
             btnShowBombs.Click += btnShowBombsEH;
             // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(843, 24);
+            menuStrip1.TabIndex = 7;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { saveToolStripMenuItem, loadToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
+            // 
+            // saveToolStripMenuItem
+            // 
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new Size(100, 22);
+            saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += TsmSaveGameClickEH;
+            // 
+            // loadToolStripMenuItem
+            // 
+            loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            loadToolStripMenuItem.Size = new Size(100, 22);
+            loadToolStripMenuItem.Text = "Load";
+            loadToolStripMenuItem.Click += TsmResumeGameClickEH;
+            // 
             // FrmGame
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -114,9 +149,13 @@
             Controls.Add(lblStartTime);
             Controls.Add(label1);
             Controls.Add(pnlGameBoard);
+            Controls.Add(menuStrip1);
+            MainMenuStrip = menuStrip1;
             Name = "FrmGame";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Minesweeper";
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -130,5 +169,9 @@
         private Label lblScore;
         private Button btnRestart;
         private Button btnShowBombs;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem loadToolStripMenuItem;
     }
 }

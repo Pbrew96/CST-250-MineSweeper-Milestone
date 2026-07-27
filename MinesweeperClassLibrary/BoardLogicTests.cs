@@ -264,6 +264,25 @@ namespace MinesweeperClassLibrary.Tests
 
             Assert.Equal(GameState.GameWon, result);
         }
-      
+        [Fact]
+        public void ActivateSpecialRewardRevealsNearbySafeCells()
+        {
+            // Arrange
+            BoardModel board = new BoardModel(3);
+            BoardLogic logic = new BoardLogic();
+
+            board.Cells[0, 0].IsBomb = true;
+            board.Cells[1, 1].HasSpecialReward = true;
+
+            // Act
+            int revealedCells =
+                logic.ActivateSpecialReward(board, 1, 1);
+
+            // Assert
+            Assert.False(board.Cells[0, 0].IsVisited);
+            Assert.True(board.Cells[1, 1].IsVisited);
+            Assert.Equal(8, revealedCells);
+        }
+
     }
 }

@@ -193,6 +193,52 @@ namespace Milestone1.MineSweeperClassLibrary.BusinessLogic
         {
             return score * difficulty;
         }
+        /// <summary>
+        /// Reveals safe cells around the special reward
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="rewardRow"></param>
+        /// <param name="rewardCol"></param>
+        /// <returns></returns>
+        public int ActivateSpecialReward(
+            BoardModel board,
+            int rewardRow,
+            int rewardCol)
+        {
+            // Track the number of newly revealed cells
+            int revealedCells = 0;
+
+            // Loop through the rows around the reward
+            for (int row = rewardRow - 1;
+                 row <= rewardRow + 1;
+                 row++)
+            {
+                // Loop through the columns around the reward
+                for (int col = rewardCol - 1;
+                     col <= rewardCol + 1;
+                     col++)
+                {
+                    // Make sure the cell is inside the board
+                    if (row >= 0 &&
+                        row < board.Size &&
+                        col >= 0 &&
+                        col < board.Size)
+                    {
+                        CellModel cell = board.Cells[row, col];
+
+                        // Reveal only safe cells that are still hidden
+                        if (!cell.IsBomb && !cell.IsVisited)
+                        {
+                            cell.IsVisited = true;
+                            revealedCells++;
+                        }
+                    }
+                }
+            }
+
+            // Return how many cells were revealed
+            return revealedCells;
+        }
     }
 
 
