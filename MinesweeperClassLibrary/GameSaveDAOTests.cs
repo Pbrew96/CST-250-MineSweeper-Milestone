@@ -71,13 +71,12 @@ namespace MineSweeperTests
                     expectedGame.RewardFound,
                     actualGame.RewardFound);
 
-                Assert.Single(actualGame.Cells);
-                Assert.True(actualGame.Cells[0].IsVisited);
-                Assert.True(actualGame.Cells[0].HasSpecialReward);
                 Assert.Equal(expectedGame.StartTime, actualGame.StartTime);
-
                 Assert.Equal(0, actualGame.Cells[0].Row);
                 Assert.Equal(0, actualGame.Cells[0].Column);
+                Assert.Single(actualGame.Cells);
+                Assert.True(actualGame.Cells[0].IsVisited);
+                Assert.True(actualGame.Cells[0].HasSpecialReward);;
             }
             finally
             {
